@@ -29,7 +29,25 @@ TP1
 
     e - "docker rm -f containerDocker"
 
-    f - "docker run --name containerDocker -p 80:80 -d nginx"
+    f - "docker run --name containerDocker -d -p 80:80 nginx"
         + "docker cp ./html/index.html containerDocker:/usr/share/nginx/html/index.html"
 
         Successfully copied 2.05kB to containerDocker:/usr/share/nginx/html/index.html
+
+4 : Builder une image
+
+    a - FROM nginx
+        COPY html/index.html /usr/share/nginx/html/index.html
+        EXPOSE 80
+
+    b - BUILD : "docker build -t nginx ."
+
+        [+] Building 1.4s (8/8) FINISHED
+        [...]
+        => => unpacking to docker.io/library/nginx:latest
+
+        RUN : "docker run --name containerDocker -d -p 80:80 nginx"
+
+    c - Avec la première solution, la visualisation des modifications locales est instantannée ; solution donc plus adaptée au développement
+        Avec le Dockerfile il faut re-build et redémarrer à chaque modification, mais l'image est mieux structurée
+
