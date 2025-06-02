@@ -12,15 +12,11 @@
 docker pull nginx
 ```
 
----
-
 ### b. Vérifier que l’image est bien présente
 
 ```bash
 docker images
 ```
-
----
 
 ### c. Créer un fichier HTML
 
@@ -29,23 +25,17 @@ mkdir ./html
 echo "Hello world" > ./html/index.html
 ```
 
----
-
 ### d. Lancer le container avec un montage de volume
 
 ```bash
 docker run --name containerDocker -p 80:80 -v "C:\Users\fanny\Desktop\Ynov 24-25\Cours\devOps\html":/usr/share/nginx/html -d nginx
 ```
 
----
-
 ### e. Supprimer le container
 
 ```bash
 docker rm -f containerDocker
 ```
-
----
 
 ### f. Relancer le container sans volume et copier le fichier
 
@@ -66,16 +56,12 @@ COPY html/index.html /usr/share/nginx/html/index.html
 EXPOSE 80
 ```
 
----
-
 ### b. Build & Run
 
 ```bash
 docker build -t nginx .
 docker run --name containerDocker -d -p 80:80 nginx
 ```
-
----
 
 ### c. Comparaison des deux méthodes
 
@@ -96,8 +82,6 @@ docker run --name containerDocker -d -p 80:80 nginx
 docker pull mysql
 docker pull phpmyadmin/phpmyadmin
 ```
-
----
 
 ### b. Exécuter les containers sur un même réseau Docker
 
@@ -136,8 +120,6 @@ Résultat sur phpMyAdmin:
 - Crée automatiquement un réseau
 - Gère les dépendances, les ports...
 
----
-
 ### b. Commandes principales
 
 **RUN**
@@ -151,8 +133,6 @@ docker-compose up -d
 ```bash
 docker-compose down
 ```
-
----
 
 ### c. Fichier `docker-compose.yml`
 
