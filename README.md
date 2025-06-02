@@ -60,4 +60,30 @@ TP1
         docker run --name mysqlTP1 --network networkTP1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=dbTP1 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql
 
         PhpMyAdmin
-        docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -p 8080:80 -d phpmyadmin/phpmyadmin
+        docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -d -p 8080:80 phpmyadmin/phpmyadmin
+
+        [phpMyAdmin](phpMyAdmin8080.png)
+
+6 : Utilisation de docker-compose.yml
+
+    a - DOCKER RUN
+
+        - Commande manuelle, utile pour lancer un seul conteneur à la fois
+        - Chaque service (MySQL, phpMyAdmin) doit être démarré avec une commande séparée
+
+    DOCKER COMPOSE
+
+        - Permet d'écrire plusieurs services dans un seul fichier YAML
+        - Crée automatiquement un réseau comun pour les services + gère les dépendances et l'ordre de démarrage + facilite la reconstruction et l'arrêt complet
+
+    b - RUN
+
+        "docker-compose up -d"
+
+    STOP
+
+        "docker-compose down"
+
+    c - [docker-compose.yml](docker-compose.yml)
+        [phpMyAdmin](phpMyAdmin8081.png)
+
