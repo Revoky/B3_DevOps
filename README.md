@@ -62,7 +62,7 @@ TP1
         PhpMyAdmin
         docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -d -p 8080:80 phpmyadmin/phpmyadmin
 
-        [phpMyAdmin](phpMyAdmin8080.png)
+[phpMyAdmin](phpMyAdmin8080.png)
 
 6 : Utilisation de docker-compose.yml
 
@@ -84,6 +84,8 @@ TP1
 
         "docker-compose down"
 
-    c - [docker-compose.yml](docker-compose.yml)
-        [phpMyAdmin](phpMyAdmin8081.png)
+    c - docker-compose.yml
+
+[docker-compose.yml](docker-compose.yml)
+[phpMyAdmin](phpMyAdmin8081.png)
 
