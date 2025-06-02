@@ -43,11 +43,21 @@ TP1
     b - BUILD : "docker build -t nginx ."
 
         [+] Building 1.4s (8/8) FINISHED
-        [...]
-        => => unpacking to docker.io/library/nginx:latest
 
         RUN : "docker run --name containerDocker -d -p 80:80 nginx"
 
     c - Avec la première solution, la visualisation des modifications locales est instantannée ; solution donc plus adaptée au développement
         Avec le Dockerfile il faut re-build et redémarrer à chaque modification, mais l'image est mieux structurée
 
+5 : Utiliser une base de données dans un container Docker
+
+    a - "docker pull mysql"
+        "docker pull phpmyadmin/phpmyadmin"
+
+    b - "docker network create networkTP1"
+
+        MySQL
+        docker run --name mysqlTP1 --network networkTP1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=dbTP1 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql
+
+        PhpMyAdmin
+        docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -p 8080:80 -d phpmyadmin/phpmyadmin
