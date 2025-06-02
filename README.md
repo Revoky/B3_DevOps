@@ -20,8 +20,10 @@ docker pull nginx
 docker images
 ```
 
+```
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
 nginx        latest    fb39280b7b9e   6 weeks ago    279MB
+```
 
 ---
 
