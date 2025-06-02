@@ -1,4 +1,3 @@
-```markdown
 # TP1 - Docker
 
 **Fanny Costes-Rossignol**
@@ -21,10 +20,8 @@ docker pull nginx
 docker images
 ```
 
-```
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
 nginx        latest    fb39280b7b9e   6 weeks ago    279MB
-```
 
 ---
 
@@ -60,9 +57,7 @@ docker run --name containerDocker -d -p 80:80 nginx
 docker cp ./html/index.html containerDocker:/usr/share/nginx/html/index.html
 ```
 
-```
 Successfully copied 2.05kB to containerDocker:/usr/share/nginx/html/index.html
-```
 
 ---
 
@@ -85,9 +80,7 @@ docker build -t nginx .
 docker run --name containerDocker -d -p 80:80 nginx
 ```
 
-```
 [+] Building 1.4s (8/8) FINISHED
-```
 
 ---
 
@@ -174,4 +167,3 @@ docker-compose down
 
 Résultat sur phpMyAdmin :  
 ![phpMyAdmin](phpMyAdmin8081.png)
-```
