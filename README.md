@@ -1,91 +1,177 @@
-Fanny Costes-Rossignol
+```markdown
+# TP1 - Docker
 
-TP1
+**Fanny Costes-Rossignol**
 
-3 : Exécuter un serveur web dans un container Docker
-    a - "docker pull nginx"
+---
 
-        Using default tag: latest
-        latest: Pulling from library/nginx
-        405bd2df85b6: Pull complete
-        cc80efff8457: Pull complete
-        abddc69cb49d: Pull complete
-        6c4aa022e8e1: Pull complete
-        2b9310b2ee4b: Pull complete
-        61320b01ae5e: Pull complete
-        670a101d432b: Pull complete
-        Digest: sha256:fb39280b7b9eba5727c884a3c7810002e69e8f961cc373b89c92f14961d903a0
-        Status: Downloaded newer image for nginx:latest
-        docker.io/library/nginx:latest
+## 3. Exécuter un serveur web dans un container Docker
 
-    b - "docker images"
+### a. Récupérer l’image nginx
 
-        REPOSITORY                   TAG       IMAGE ID       CREATED        SIZE
-        nginx                        latest    fb39280b7b9e   6 weeks ago    279MB
+```bash
+docker pull nginx
+```
 
-    c - "mkdir ./html" + "echo "Hello world" > ./html/index.html"
+---
 
-    d - "docker run --name containerDocker -p 80:80 -v C:\Users\fanny\Desktop\"Ynov 24-25"\Cours\devOps\html -d nginx"
+### b. Vérifier que l’image est bien présente
 
-    e - "docker rm -f containerDocker"
+```bash
+docker images
+```
 
-    f - "docker run --name containerDocker -d -p 80:80 nginx"
-        + "docker cp ./html/index.html containerDocker:/usr/share/nginx/html/index.html"
+```
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+nginx        latest    fb39280b7b9e   6 weeks ago    279MB
+```
 
-        Successfully copied 2.05kB to containerDocker:/usr/share/nginx/html/index.html
+---
 
-4 : Builder une image
+### c. Créer un fichier HTML
 
-    a - FROM nginx
-        COPY html/index.html /usr/share/nginx/html/index.html
-        EXPOSE 80
+```bash
+mkdir ./html
+echo "Hello world" > ./html/index.html
+```
 
-    b - BUILD : "docker build -t nginx ."
+---
 
-        [+] Building 1.4s (8/8) FINISHED
+### d. Lancer le container avec un montage de volume
 
-        RUN : "docker run --name containerDocker -d -p 80:80 nginx"
+```bash
+docker run --name containerDocker -p 80:80 -v "C:\Users\fanny\Desktop\Ynov 24-25\Cours\devOps\html":/usr/share/nginx/html -d nginx
+```
 
-    c - Avec la première solution, la visualisation des modifications locales est instantannée ; solution donc plus adaptée au développement
-        Avec le Dockerfile il faut re-build et redémarrer à chaque modification, mais l'image est mieux structurée
+---
 
-5 : Utiliser une base de données dans un container Docker
+### e. Supprimer le container
 
-    a - "docker pull mysql"
-        "docker pull phpmyadmin/phpmyadmin"
+```bash
+docker rm -f containerDocker
+```
 
-    b - "docker network create networkTP1"
+---
 
-        MySQL
-        docker run --name mysqlTP1 --network networkTP1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=dbTP1 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql
+### f. Relancer le container sans volume et copier le fichier
 
-        PhpMyAdmin
-        docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -d -p 8080:80 phpmyadmin/phpmyadmin
+```bash
+docker run --name containerDocker -d -p 80:80 nginx
+docker cp ./html/index.html containerDocker:/usr/share/nginx/html/index.html
+```
 
-[phpMyAdmin](phpMyAdmin8080.png)
+```
+Successfully copied 2.05kB to containerDocker:/usr/share/nginx/html/index.html
+```
 
-6 : Utilisation de docker-compose.yml
+---
 
-    a - DOCKER RUN
+## 4. Builder une image Docker personnalisée
 
-        - Commande manuelle, utile pour lancer un seul conteneur à la fois
-        - Chaque service (MySQL, phpMyAdmin) doit être démarré avec une commande séparée
+### a. Contenu du Dockerfile
 
-    DOCKER COMPOSE
+```Dockerfile
+FROM nginx
+COPY html/index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+```
 
-        - Permet d'écrire plusieurs services dans un seul fichier YAML
-        - Crée automatiquement un réseau comun pour les services + gère les dépendances et l'ordre de démarrage + facilite la reconstruction et l'arrêt complet
+---
 
-    b - RUN
+### b. Build & Run
 
-        "docker-compose up -d"
+```bash
+docker build -t nginx .
+docker run --name containerDocker -d -p 80:80 nginx
+```
 
-    STOP
+```
+[+] Building 1.4s (8/8) FINISHED
+```
 
-        "docker-compose down"
+---
 
-    c - docker-compose.yml
+### c. Comparaison des deux méthodes
 
-[docker-compose.yml](docker-compose.yml)
-[phpMyAdmin](phpMyAdmin8081.png)
+- **Montage de volume**
+  - Affichage instantané des modifications locales
+  - Idéal pour le développement
+- **Dockerfile (COPY)**
+  - Rebuild + restart nécessaires
+  - Image propre, plus adapté à la production
 
+---
+
+## 5. Utiliser une base de données dans un container Docker
+
+### a. Télécharger les images nécessaires
+
+```bash
+docker pull mysql
+docker pull phpmyadmin/phpmyadmin
+```
+
+---
+
+### b. Exécuter les containers sur un même réseau Docker
+
+```bash
+docker network create networkTP1
+```
+
+**MySQL**
+
+```bash
+docker run --name mysqlTP1 --network networkTP1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=dbTP1 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql
+```
+
+**phpMyAdmin**
+
+```bash
+docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -d -p 8080:80 phpmyadmin/phpmyadmin
+```
+
+Résultat sur phpMyAdmin:  
+![phpMyAdmin](phpMyAdmin8080.png)
+
+---
+
+## 6. Utilisation de `docker-compose.yml`
+
+### a. Différences `docker run` vs `docker-compose`
+
+#### `docker run` :
+- Démarrage manuel de chaque conteneur
+- Configuration manuelle des liens réseau
+- Peu pratique dès qu’on a plusieurs services
+
+#### `docker-compose` :
+- Décrit tous les services dans un seul fichier .yml
+- Crée automatiquement un réseau
+- Gère les dépendances, les ports...
+
+---
+
+### b. Commandes principales
+
+**RUN**
+
+```bash
+docker-compose up -d
+```
+
+**STOP**
+
+```bash
+docker-compose down
+```
+
+---
+
+### c. Fichier `docker-compose.yml`
+
+[Voir le fichier docker-compose.yml](docker-compose.yml)
+
+Résultat sur phpMyAdmin :  
+![phpMyAdmin](phpMyAdmin8081.png)
+```
