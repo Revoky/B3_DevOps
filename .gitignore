@@ -1,0 +1,8 @@
+postgres-data/
+.idea
+*/node_modules
+.env
+package-lock.json
+
+data/postgres-data/
+data/containers_info.txt

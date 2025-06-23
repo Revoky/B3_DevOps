@@ -1,142 +1,45 @@
-# TP1 - Docker
+# Projet MatchMe
 
-**Fanny Costes-Rossignol**
+## 👥 Répartition des groupes
 
----
+- **Groupe 1** *(user, preferences, question/answer, challenge)*
+  Fanny Costes-Rossignol & Gaëlle Lanic  
+- **Groupe 2** *(authentification, swipe, match, messages)*
+  François Gourbal & Matéo Bentoglio
 
-## 3. Exécuter un serveur web dans un container Docker
+## 📚 Documentation
 
-### a. Récupérer l’image nginx
+- 📄 [OpenAPI](./documentation/backend/api/openapi.yaml)  
+- ⚙️ [Installation (Docker)](./documentation/installation/docker.md)
 
-```bash
-docker pull nginx
-```
+## ✅ Validation des compétences
 
-### b. Vérifier que l’image est bien présente
+### Analyser les besoins et maquetter une application
+- Recueil des besoins utilisateurs
+- Réalisation de maquettes d’interfaces
 
-```bash
-docker images
-```
+### Définir l’architecture logicielle d’une application
+- Architecture en couches: API REST, séparation backend/frontend
+- Utilisation d’OpenAPI pour la documentation et la structure de l’API
+- Gestion de la sécurité via des schémas d’authentification: JWT en cookie 🍪
 
-### c. Créer un fichier HTML
+### Concevoir et mettre en place une base de données relationnelle
+- Modélisation des entités: utilisateurs, questions, réponses, matchs, messages, préférences, swipes
+- Création du schéma relationnel et des relations entre tables
+- Utilisation de migrations pour la gestion du schéma de base de données
 
-```bash
-mkdir ./html
-echo "Hello world" > ./html/index.html
-```
+### Développer des composants d’accès aux données SQL
+- Implémentation de controllers pour l’accès et la manipulation des données via l’API
 
-### d. Lancer le container avec un montage de volume
+### Préparer et exécuter les plans de tests d’une application
+- Mise en place de tests Postman pour les endpoints de l’API
+- CI/CD pour tester le build frontend et le bon fonctionnement du backend et de la base de données
 
-```bash
-docker run --name containerDocker -p 80:80 -v "C:\Users\fanny\Desktop\Ynov 24-25\Cours\devOps\html":/usr/share/nginx/html -d nginx
-```
+### Préparer et documenter le déploiement d’une application
+- Documentation du processus d’installation et de déploiement (voir section Documentation ci-dessus)
+- Utilisation de scripts pour l’automatisation du déploiement en environnement de développement et production
 
-### e. Supprimer le container
-
-```bash
-docker rm -f containerDocker
-```
-
-### f. Relancer le container sans volume et copier le fichier
-
-```bash
-docker run --name containerDocker -d -p 80:80 nginx
-docker cp ./html/index.html containerDocker:/usr/share/nginx/html/index.html
-```
-
----
-
-## 4. Builder une image Docker personnalisée
-
-### a. Contenu du Dockerfile
-
-```Dockerfile
-FROM nginx
-COPY html/index.html /usr/share/nginx/html/index.html
-EXPOSE 80
-```
-
-### b. Build & Run
-
-```bash
-docker build -t nginx .
-docker run --name containerDocker -d -p 80:80 nginx
-```
-
-### c. Comparaison des deux méthodes
-
-- **Montage de volume**
-  - Affichage instantané des modifications locales
-  - Idéal pour le développement
-- **Dockerfile (COPY)**
-  - Rebuild + restart nécessaires
-  - Image propre, plus adapté à la production
-
----
-
-## 5. Utiliser une base de données dans un container Docker
-
-### a. Télécharger les images nécessaires
-
-```bash
-docker pull mysql
-docker pull phpmyadmin/phpmyadmin
-```
-
-### b. Exécuter les containers sur un même réseau Docker
-
-```bash
-docker network create networkTP1
-```
-
-**MySQL**
-
-```bash
-docker run --name mysqlTP1 --network networkTP1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=dbTP1 -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql
-```
-
-**phpMyAdmin**
-
-```bash
-docker run --name phpmyadminTP1 --network networkTP1 -e PMA_HOST=mysqlTP1 -d -p 8080:80 phpmyadmin/phpmyadmin
-```
-
-Résultat sur phpMyAdmin:  
-![phpMyAdmin](phpMyAdmin8080.png)
-
----
-
-## 6. Utilisation de `docker-compose.yml`
-
-### a. Différences `docker run` vs `docker-compose`
-
-#### `docker run` :
-- Démarrage manuel de chaque conteneur
-- Configuration manuelle des liens réseau
-- Peu pratique dès qu’on a plusieurs services
-
-#### `docker-compose` :
-- Décrit tous les services dans un seul fichier .yml
-- Crée automatiquement un réseau
-- Gère les dépendances, les ports...
-
-### b. Commandes principales
-
-**RUN**
-
-```bash
-docker-compose up -d
-```
-
-**STOP**
-
-```bash
-docker-compose down
-```
-
-### c. Fichier `docker-compose.yml`
-
-[Voir le fichier docker-compose.yml](docker-compose.yml)
-
-Résultat sur phpMyAdmin :  
-![phpMyAdmin](phpMyAdmin8081.png)
+### Contribuer à la mise en production dans une démarche DevOps
+- Utilisation de conteneurs Docker pour faciliter le déploiement
+- Préparation de fichiers de configuration pour l’intégration continue (CI/CD)
+- Suivi et gestion des versions via Git

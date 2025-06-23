@@ -1,27 +1,40 @@
-version: '3.8'
-
 services:
   mysql:
-    image: mysql
-    container_name: mysqlTP1_2
+    image: mysql:latest
+    container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: monmotdepasse
-      MYSQL_DATABASE: dbTP1_2
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
+    expose:
+      - "3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadminTP1_2
-    ports:
-      - "8081:80"
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadminTP2
     environment:
-      PMA_HOST: mysqlTP1_2
+      PMA_HOST: mysql
       PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
     depends_on:
       - mysql
+    ports:
+      - "8081:80"
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: apiTP2
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    env_file:
+      - ./backend/.env
 
 volumes:
-  db_data:
+  mysql_data: {}

@@ -1,0 +1,952 @@
+openapi: 3.0.3
+info:
+  title: API MatchMe
+  description: |
+    **API MatchMe** est une plateforme de mise en relation sociale.
+    
+    Ce projet Fil Rouge de Ynov CDA 2025 a été développé par :
+    - Gaëlle LANIC
+    - Fanny COSTES-ROSSIGNOL
+    - François GOURBAL
+    - Mateo BENTOGLIO
+  version: 1.0.0
+  #  contact:
+  #    name: Équipe MatchMe
+  #    email: contact@matchme.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080
+    description: Environnement de développement local
+#  - url: https://api.matchme.example.com
+#    description: API de production
+tags:
+  - name: Users
+    description: Gestion des utilisateurs
+  - name: Auth
+    description: Authentification et autorisation
+  - name: Questions
+    description: Gestion des questions et réponses
+  - name: Matches
+    description: Gestion des correspondances (matchs)
+  - name: Messages
+    description: Envoi et récupération des messages
+  - name: Preferences
+    description: Préférences utilisateur
+  - name: Swipes
+    description: Gestion des swipes (like/dislike)
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+    cookieRefreshAuth:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+  schemas:
+    User:
+      type: object
+      description: Représente un utilisateur de l'application (hors mot de passe).
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: fakeUsername
+        firstname:
+          type: string
+          example: FakeFirstName
+        lastname:
+          type: string
+          example: FakeLastName
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        age:
+          type: integer
+          example: 30
+        city:
+          type: string
+          example: FakeCity
+        role:
+          type: string
+          description: Rôle de l'utilisateur dans l'application
+          example: user
+    UserRegister:
+      type: object
+      required:
+        - username
+        - firstname
+        - lastname
+        - email
+        - password
+        - age
+        - city
+      properties:
+        username:
+          type: string
+          example: fakeUsername
+        firstname:
+          type: string
+          example: FakeFirstName
+        lastname:
+          type: string
+          example: FakeLastName
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: Password123
+        age:
+          type: integer
+          example: 25
+        city:
+          type: string
+          example: Paris
+      example:
+        username: fakeUsername
+        firstname: FakeFirstName
+        lastname: FakeLastName
+        email: user@example.com
+        password: Password123
+        age: 25
+        city: Paris
+    UserLogin:
+      type: object
+      required: [ username, password ]
+      properties:
+        username:
+          type: string
+          example: fakeUsername
+        password:
+          type: string
+          format: password
+          example: Password123
+      example:
+        username: fakeUsername
+        password: Password123
+    UserUpdate:
+      type: object
+      description: Champs modifiables d'un utilisateur
+      properties:
+        firstname:
+          type: string
+          example: UpdatedFirstName
+        lastname:
+          type: string
+          example: UpdatedLastName
+        email:
+          type: string
+          format: email
+          example: updated@example.com
+        age:
+          type: integer
+          example: 28
+        city:
+          type: string
+          example: UpdatedCity
+      example:
+        firstname: UpdatedFirstName
+        lastname: UpdatedLastName
+        email: updated@example.com
+        age: 28
+        city: UpdatedCity
+    Question:
+      type: object
+      properties:
+        idquestion:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "Quelle est ta couleur préférée ?"
+    QuestionCreate:
+      type: object
+      required: [ content ]
+      properties:
+        content:
+          type: string
+          example: "Fake question content"
+      example:
+        content: "Fake question content"
+    AnswerCreate:
+      type: object
+      required: [ question_id, content ]
+      properties:
+        question_id:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "Fake answer content"
+      example:
+        question_id: 1
+        content: "Fake answer content"
+    MatchCreate:
+      type: object
+      required: [ iduser1, iduser2 ]
+      properties:
+        iduser1:
+          type: integer
+          example: 1
+        iduser2:
+          type: integer
+          example: 2
+      example:
+        iduser1: 1
+        iduser2: 2
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        idmatch:
+          type: integer
+          example: 1
+        senderid:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "Hello, how are you?"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-04-25T12:00:00Z"
+    MessageCreate:
+      type: object
+      required: [ senderId, content ]
+      properties:
+        senderId:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "Hello, how are you?"
+      example:
+        senderId: 1
+        content: "Hello, how are you?"
+    Preference:
+      type: object
+      properties:
+        rangelocation:
+          type: integer
+          description: Distance maximale (km)
+          example: 50
+        agemin:
+          type: integer
+          example: 18
+        agemax:
+          type: integer
+          example: 30
+        typerelations:
+          type: array
+          items:
+            type: string
+          example: [ "amitié", "relation sérieuse" ]
+        orientation:
+          type: string
+          example: "bi"
+        humour:
+          type: array
+          items:
+            type: string
+          example: [ "ironique", "drôle" ]
+    Swipe:
+      type: object
+      description: Représente une action de swipe entre deux utilisateurs.
+      properties:
+        id:
+          type: integer
+          example: 1
+        iduser1:
+          type: integer
+          example: 1
+        iduser2:
+          type: integer
+          example: 2
+        liked:
+          type: boolean
+          example: true
+      SwipeCreate:
+        type: object
+        required:
+          - iduser2
+          - liked
+        properties:
+          iduser2:
+            type: integer
+            example: 2
+          liked:
+            type: boolean
+            example: true
+    SafeUser:
+      type: object
+      description: Représente un utilisateur sans champs sensibles comme le mot de passe ou les tokens.
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: fakeUsername
+        firstname:
+          type: string
+          example: FakeFirstName
+        lastname:
+          type: string
+          example: FakeLastName
+        age:
+          type: integer
+          example: 25
+        city:
+          type: string
+          example: Paris
+
+
+paths:
+  /users:
+    get:
+      tags: [ Users ]
+      summary: Récupérer tous les utilisateurs
+      description: |
+        Retourne la liste de tous les utilisateurs (hors mot de passe).
+        ⚠️ Seuls les membres du staff peuvent accéder à cette route.
+      security:
+        - cookieAuth: [ ]
+      responses:
+        '200':
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Accès refusé - Rôle insuffisant
+        '500':
+          description: Erreur serveur
+  /users/{id}:
+    get:
+      tags: [ Users ]
+      summary: Récupérer un utilisateur par ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
+    put:
+      tags: [ Users ]
+      summary: Mettre à jour un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Utilisateur mis à jour
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
+    delete:
+      tags: [ Users ]
+      summary: Supprimer un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        '200':
+          description: Utilisateur supprimé
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
+  /users/register:
+    post:
+      tags: [ Users ]
+      summary: Inscription d'un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Erreur de validation
+        '500':
+          description: Erreur serveur
+  /users/login:
+    post:
+      tags: [ Auth ]
+      summary: Connexion utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Connexion réussie (en-têtes Set-Cookie pour token et refreshToken)
+        '400':
+          description: Champs manquants ou invalides
+        '500':
+          description: Erreur serveur
+  /auth/checkToken:
+    get:
+      tags: [ Auth ]
+      summary: Vérifier la validité du token d'authentification
+      security:
+        - cookieAuth: [ ]
+      responses:
+        '200':
+          description: Token valide
+        '401':
+          description: Token invalide ou expiré
+        '500':
+          description: Erreur serveur
+  /questions:
+    get:
+      tags: [ Questions ]
+      summary: Récupérer toutes les questions
+      responses:
+        '200':
+          description: Liste des questions
+        '500':
+          description: Erreur serveur
+    post:
+      tags: [ Questions ]
+      summary: Créer une question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionCreate'
+      responses:
+        '201':
+          description: Question créée
+        '400':
+          description: Contenu manquant
+        '500':
+          description: Erreur serveur
+  /questions/{id}:
+    get:
+      tags: [ Questions ]
+      summary: Récupérer une question par ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Question trouvée
+        '404':
+          description: Question non trouvée
+        '500':
+          description: Erreur serveur
+    put:
+      tags: [ Questions ]
+      summary: Mettre à jour une question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionCreate'
+      responses:
+        '200':
+          description: Question mise à jour
+        '404':
+          description: Question non trouvée
+        '500':
+          description: Erreur serveur
+    delete:
+      tags: [ Questions ]
+      summary: Supprimer une question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Question supprimée
+        '404':
+          description: Question non trouvée
+        '500':
+          description: Erreur serveur
+  /questions/random:
+    get:
+      tags: [ Questions ]
+      summary: Récupérer des questions aléatoires
+      parameters:
+        - in: query
+          name: count
+          schema:
+            type: integer
+          description: Nombre de questions à retourner (défaut 3)
+          example: 3
+      responses:
+        '200':
+          description: Questions aléatoires
+        '500':
+          description: Erreur serveur
+  /questions/{id}/answers:
+    get:
+      tags: [ Questions ]
+      summary: Récupérer les réponses d'une question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Liste des réponses
+        '500':
+          description: Erreur serveur
+  /answers/users/{id}/answers:
+    post:
+      tags: [ Questions ]
+      summary: Créer une réponse utilisateur à une question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswerCreate'
+      responses:
+        '201':
+          description: Réponse créée
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+  /answers/{id}:
+    put:
+      tags: [ Questions ]
+      summary: Mettre à jour une réponse
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswerCreate'
+      responses:
+        '200':
+          description: Réponse mise à jour
+        '404':
+          description: Réponse non trouvée
+        '500':
+          description: Erreur serveur
+  /match:
+    get:
+      tags: [ Matches ]
+      summary: Récupérer tous les matchs
+      responses:
+        '200':
+          description: Liste des matchs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        user1:
+                          $ref: '#/components/schemas/SafeUser'
+                        user2:
+                          $ref: '#/components/schemas/SafeUser'
+                        messages:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Message'
+        '500':
+          description: Erreur serveur
+  /match/{id}:
+    get:
+      tags: [ Matches ]
+      summary: Récupérer un match par ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Match trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  match:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      user1:
+                        $ref: '#/components/schemas/SafeUser'
+                      user2:
+                        $ref: '#/components/schemas/SafeUser'
+                      messages:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Message'
+        '404':
+          description: Match non trouvé
+        '500':
+          description: Erreur serveur
+
+  /matches/{match_id}/messages:
+    get:
+      tags: [ Messages ]
+      summary: Récupérer les messages d'un match
+      description: Retourne la liste paginée des messages pour un match donné.
+      parameters:
+        - in: path
+          name: match_id
+          required: true
+          schema: { type: integer }
+          example: 1
+        - in: query
+          name: page
+          schema: { type: integer }
+          description: Page de résultats (défaut 1)
+          example: 1
+        - in: query
+          name: limit
+          schema: { type: integer }
+          description: Nombre de messages par page (défaut 10)
+          example: 10
+      responses:
+        '200':
+          description: Liste des messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matchId: { type: integer, example: 1 }
+                  page: { type: integer, example: 1 }
+                  limit: { type: integer, example: 10 }
+                  totalMessages: { type: integer, example: 42 }
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+        '400':
+          description: ID de match invalide
+        '500':
+          description: Erreur serveur
+    post:
+      tags: [ Messages ]
+      summary: Envoyer un message dans un match
+      parameters:
+        - in: path
+          name: match_id
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+      responses:
+        '201':
+          description: Message créé
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+  /matches/{match_id}/messages/{id}:
+    get:
+      tags: [ Messages ]
+      summary: Récupérer un message par ID
+      parameters:
+        - in: path
+          name: match_id
+          required: true
+          schema: { type: integer }
+          example: 1
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        '200':
+          description: Message trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Message non trouvé
+        '500':
+          description: Erreur serveur
+    delete:
+      tags: [ Messages ]
+      summary: Supprimer un message
+      parameters:
+        - in: path
+          name: match_id
+          required: true
+          schema: { type: integer }
+          example: 1
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        '200':
+          description: Message supprimé
+        '404':
+          description: Message non trouvé
+        '500':
+          description: Erreur serveur
+  /swipes:
+    security:
+      - cookieAuth: [ ]
+    get:
+      tags: [ Swipes ]
+      summary: Récupérer tous les swipes
+      responses:
+        '200':
+          description: Liste des swipes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  swipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Swipe'
+        '500':
+          description: Erreur serveur
+    post:
+      tags: [ Swipes ]
+      summary: Enregistrer un swipe (like/dislike)
+      security:
+        - cookieAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iduser2
+                - liked
+              properties:
+                iduser2:
+                  type: integer
+                  example: 2
+                liked:
+                  type: boolean
+                  example: true
+              $ref: '#/components/schemas/Swipe'
+      responses:
+        '201':
+          description: Swipe créé (et éventuellement un match en cas de like réciproque)
+        '400':
+          description: Données invalides ou swipe déjà effectué
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+  /swipes/me:
+    get:
+      tags: [ Swipes ]
+      summary: Récupérer les swipes effectués par l'utilisateur connecté
+      security:
+        - cookieAuth: [ ]
+      responses:
+        '200':
+          description: Liste des swipes de l'utilisateur connecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  swipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Swipe'
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+  /preferences:
+    get:
+      tags: [ Preferences ]
+      summary: Récupérer toutes les préférences
+      responses:
+        '200':
+          description: Liste des préférences
+        '500':
+          description: Erreur serveur
+  /preferences/{id}:
+    get:
+      tags: [ Preferences ]
+      summary: Récupérer la préférence d'un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        '200':
+          description: Préférence trouvée
+        '404':
+          description: Préférence non trouvée
+        '500':
+          description: Erreur serveur
+    post:
+      tags: [ Preferences ]
+      summary: Créer une préférence pour un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preference'
+      responses:
+        '201':
+          description: Préférence créée
+        '400':
+          description: Préférence déjà existante
+        '500':
+          description: Erreur serveur
+    put:
+      tags: [ Preferences ]
+      summary: Mettre à jour la préférence d'un utilisateur
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preference'
+      responses:
+        '200':
+          description: Préférence mise à jour
+        '404':
+          description: Préférence non trouvée
+        '500':
+          description: Erreur serveur
+security:
+  - cookieAuth: [ ]
+  - cookieRefreshAuth: [ ]

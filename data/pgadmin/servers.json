@@ -1,0 +1,16 @@
+{
+  "Servers": {
+    "1": {
+      "Group": "Developpement Ynov Team",
+      "Name": "MatchMe",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "matchme",
+      "Username": "admin",
+      "Password": "admin",
+      "SavePassword": true,
+      "SSLMode": "prefer",
+      "Favorite": true
+    }
+  }
+}

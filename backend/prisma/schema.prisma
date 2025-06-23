@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  firstname    String
+  lastname     String
+  username     String   @unique
+  password     String
+  email        String   @unique
+  age          Int
+  city         String
+  role         String
+  refreshToken String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  answers    Answer[]
+  matches1   Match[]     @relation("MatchUser1")
+  matches2   Match[]     @relation("MatchUser2")
+  messages   Message[]   @relation("MessageSender")
+  preference Preference?
+  Swipe      Swipe[]     @relation("SwipeUser1")
+}
+
+model Question {
+  id Int    @id @default(autoincrement())
+  content    String
+
+  answers Answer[]
+}
+
+model Answer {
+  id         Int     @id @default(autoincrement())
+  idquestion Int
+  iduser     Int
+  content    String?
+
+  question Question @relation(fields: [id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [iduser], references: [id], onDelete: Cascade)
+
+  @@unique([iduser, idquestion])
+}
+
+model Match {
+  id      Int @id @default(autoincrement())
+  iduser1 Int
+  iduser2 Int
+
+  user1    User      @relation("MatchUser1", fields: [iduser1], references: [id], onDelete: Cascade)
+  user2    User      @relation("MatchUser2", fields: [iduser2], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([iduser1, iduser2])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  idmatch   Int
+  senderid  Int
+  content   String
+  timestamp DateTime @default(now())
+
+  match  Match @relation(fields: [idmatch], references: [id], onDelete: Cascade)
+  sender User  @relation("MessageSender", fields: [senderid], references: [id], onDelete: Cascade)
+}
+
+model Preference {
+  iduser        Int      @unique
+  rangelocation Int?
+  agemin        Int?
+  agemax        Int?
+  typerelations Json?
+  orientation   String?
+  humour        Json?
+
+  user User @relation(fields: [iduser], references: [id], onDelete: Cascade)
+}
+
+model Swipe {
+  id      Int     @id @default(autoincrement())
+  iduser1 Int
+  iduser2 Int
+  liked   Boolean
+
+  user1 User @relation("SwipeUser1", fields: [iduser1], references: [id], onDelete: Cascade)
+
+  @@unique([iduser1, iduser2])
+}
+
+model Challenge {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
